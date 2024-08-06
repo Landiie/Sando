@@ -1,0 +1,1 @@
+[ { "list_type": 0.0, "ext_trigger": "Balatro", "list": 0.0, "path": "C:\\Users\\Landie\\AppData\\Roaming\\Balatro\\Mods\\SAMMI\\output.txt" } ]

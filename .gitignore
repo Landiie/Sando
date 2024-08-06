@@ -1,0 +1,3 @@
+node_modules
+src/extension_asset_structure/landies_extensions/sando/obs_plugin_handler/testing_output/*
+src/extension_asset_structure/landies_extensions/sando/tools/deck_backups/*
