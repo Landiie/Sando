@@ -120,14 +120,22 @@ SAMMI.extCommand('Sando: Twitch Get User Info (Cached)', 4467268, 80, {
 //     comp: ['Compare', 8, '>=', null, null],
 //     target: ['Target', 14, '', null, null]
 // });
-const sandoCwPresets = ['Sando: CW Choice', 'Sando: CW Input', 'Sando: CW Dropdown', 'Sando: CW Custom']
+const sandoCwPresets = ['Sando: CW Dropdown', 'Sando: CW Custom']
 
 SAMMI.extCommand('Sando: Custom Window', 4467268, 80,{ 
   mode: ['Mode', 25, 'Choose Option...', null, sandoCwPresets]
 }, true)
 SAMMI.extCommand('Sando: CW Custom', 4467268, 80,{ 
-  mode: ['Mode', 25, 'Choose Option...', null, sandoCwPresets],
+  mode: ['Mode', 25, 'Sando: CW Custom', null, sandoCwPresets],
   html: ['HTML File', 22, '', null, null],
+  config: ['Window Config (JSON)', 0, '', null, null],
   payload: ['Custom Payload (JSON)', 0, '', null, null],
+  var: ['Save Status Variable', 14, '', null, null]
+}, false, true)
+SAMMI.extCommand('Sando: CW Dropdown', 4467268, 80,{ 
+  mode: ['Mode', 25, 'Sando: CW Dropdown', null, sandoCwPresets],
+  header: ['Header', 14, '', null, null],
+  caption: ['Caption', 14, '', null, null],
+  arr: ['Array Name', 14, '', null, null],
   var: ['Save Status Variable', 14, '', null, null]
 }, false, true)

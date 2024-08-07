@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: 'Nunito';
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgb(80, 98, 255);
+            background: linear-gradient(20deg, rgba(80, 98, 255, 1) 1%, rgba(179, 108, 255, 1) 93%);
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 0;
+            right: 5px;
+            color: rgba(255, 255, 255, 0.306);
+        }
+
+        .container {
+            padding: 2rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            background-color: rgba(255, 255, 255, 0.503);
+        }
+
+        .options {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .options button {
+            padding: 0.7rem;
+            border: none;
+            border-radius: 0.3rem;
+            transition: 200ms cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+
+        .options button:hover {
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .primary {
+            background-color: rgb(9, 132, 255);
+            color: white;
+        }
+
+        .secondary {
+            background-color: gray;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+        }
+
+        #headercaption {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+    <p class="watermark">Sando Custom Windows</p>
+    <div class="container">
+        <div class="header">
+            <h1 id="header">Favorite Animal</h1>
+            <p id="headercaption">Choose what animal best fits your style!</p>
+        </div>
+        <select name="dropdown" id="dropdown">
+            <option value="cat">Cat</option>
+            <option value="cat2">Cat2 🐈</option>
+            <option value="donating">Donating</option>
+        </select>
+        <div class="options">
+            <button class="primary" id="submit">Submit</button>
+            <button class="secondary" id="cancel">Cancel</button>
+        </div>
+    </div>
+    <script>
+        //setup window
+        header.textContent = Sando.payload.header;
+        headercaption.textContent = Sando.payload.caption;
+        fillDropdown()
+        console.log(Sando)
+        Sando.getVariable('asdasdasdas', 'Sando').then((res) => {
+            caption.textContent = res
+            console.log(res)
+        })
+        submit.addEventListener('click', () => {
+            Sando.setVariable('selectedOption', dropdown.value)
+            Sando.setStatus(true)
+        })
+        cancel.addEventListener('click', () => {
+            Sando.setStatus(false)
+        })
+        
+        function fillDropdown() {
+            dropdown.innerHTML = ''
+            Sando.payload.options.forEach(value => {
+                const option = createOption(value)
+                dropdown.appendChild(option)
+            });
+        }
+
+        function createOption(value) {
+            const option = document.createElement('option');
+            option.setAttribute('value', value)
+            option.textContent = value;
+            return option
+        }
+    </script>
+</body>
+
+</html>
