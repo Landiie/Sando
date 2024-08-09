@@ -34,9 +34,21 @@ function connectToRelay() {
   };
 
   window.wsRelay.onmessage = async event => {
+    console.log("relay data recieved: ", event);
     const eventData = JSON.parse(event.data);
     //separates out unique events
     switch (eventData.event) {
+      case "SandoDevServerOperationalAndConnected":
+        SAMMI.setVariable('bridge_relay_connected', true, 'Sando');
+        break;
+      case "SandoDevTriggerExtCustomWindow":
+        console.log("Custom event: TriggerExt CustomWindow");
+        SAMMI.triggerExt(eventData.extTrigger, eventData.params);
+        break;
+      case "SandoDevTriggerButtonCustomWindow":
+        console.log("Custom event: TriggerButton CustomWindow");
+        SAMMI.triggerButton(eventData.button);
+        break;
       case "SandoDevGetVariableCustomWindow":
         console.log("Custom event: GetVariable CustomWindow");
         console.log(eventData);
@@ -88,13 +100,15 @@ async function sandoWindowGetVariable(name, button, hash, windowHash) {
   const res = await SAMMI.getVariable(name, button);
   console.log("result: ", res);
   const obj = {
-    client_id: "sando-helper",
-    event: "GetVariableResult",
-    value: res.Value,
-    hash: hash,
-    windowHash: windowHash,
+    target_client_id: "Sando Helper",
+    data: JSON.stringify({
+      event: "GetVariableResult",
+      value: res.Value,
+      hash: hash,
+      windowHash: windowHash,
+    }),
   };
-  console.log(window.wsRelay);
+  //console.log(window.wsRelay);
   window.wsRelay.send(JSON.stringify(obj));
   console.log("should send now");
 }
@@ -114,35 +128,47 @@ async function sandoCustomWindowDropdown(
   }
 
   if (!arrName) {
-    devSandoError(btn, "Sando: CW Dropdown", `No array name specified. Your dropdown needs options to pick from!`);
+    devSandoError(
+      btn,
+      "Sando: CW Dropdown",
+      `No array name specified. Your dropdown needs options to pick from!`
+    );
     SAMMI.setVariable(saveVar, undefined, btn, instanceId);
     return;
   }
   let arrContents = await SAMMI.getVariable(arrName, btn);
   arrContents = arrContents.value;
 
-  console.log('arr contents: ', arrContents)
+  console.log("arr contents: ", arrContents);
 
   if (!Array.isArray(arrContents)) {
-    devSandoError(btn, "Sando: CW Dropdown", `Array name "${arrName}" does not exist`);
+    devSandoError(
+      btn,
+      "Sando: CW Dropdown",
+      `Array name "${arrName}" does not exist`
+    );
     SAMMI.setVariable(saveVar, undefined, btn, instanceId);
     return;
   }
 
   if (arrContents.length < 2) {
-    devSandoError(btn, "Sando: CW Dropdown", `${arrContents.length} elements found inside "${arrName}". You need at least two options!`);
+    devSandoError(
+      btn,
+      "Sando: CW Dropdown",
+      `${arrContents.length} elements found inside "${arrName}". You need at least two options!`
+    );
     SAMMI.setVariable(saveVar, undefined, btn, instanceId);
     return;
   }
 
-  SAMMI.triggerExt('Sando: CW Dropdown', {
+  SAMMI.triggerExt("Sando: CW Dropdown", {
     header: header,
     caption: caption,
     arr: arrContents,
     var: saveVar,
     FromButton: btn,
-    instanceId: instanceId
-  })
+    instanceId: instanceId,
+  });
 }
 
 function sandoCustomWindow(
@@ -160,33 +186,33 @@ function sandoCustomWindow(
   }
   htmlPath = "file:///" + htmlPath.replaceAll("\\", "/");
   const obj = {
-    client_id: "sando-helper",
-    event: "NewWindow",
-    htmlPath: htmlPath,
-    sammiBtn: btn,
-    sammiVar: saveVar,
-    sammiInstance: instanceId,
-    windowConfig: {},
+    target_client_id: "Sando Helper",
+    data: {
+      event: "NewWindow",
+      htmlPath: htmlPath,
+      sammiBtn: btn,
+      sammiVar: saveVar,
+      sammiInstance: instanceId,
+      windowConfig: {},
+      payload: {}
+    },
   };
 
   if (payload !== "") {
     try {
       const parsedPayload = JSON.parse(payload);
-      obj.data = parsedPayload;
+      obj.data.payload = parsedPayload;
     } catch (e) {
       devSandoError(btn, "Sando: Custom Window", `JSON Payload is malformed.`);
       SAMMI.setVariable(saveVar, undefined, btn, instanceId);
       return;
     }
-  } else {
-    payload = {};
   }
 
-  let parsedConfig = {};
   if (config !== "") {
     try {
-      parsedConfig = JSON.parse(config);
-      obj.windowConfig = parsedConfig;
+      const parsedConfig = JSON.parse(config);
+      obj.data.windowConfig = parsedConfig;
     } catch (e) {
       devSandoError(
         btn,
@@ -198,11 +224,15 @@ function sandoCustomWindow(
     }
   }
 
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a custom window, heres the data: ", obj);
   window.wsRelay.send(JSON.stringify(obj));
 }
 function sandoWsRelay(msg, target, button) {
   if (target === "") {
-    SAMMI.alert("[Sando] You need to provide a Client ID!");
+    SAMMI.alert("[Sando] You need to provide a Target Client ID!");
     return;
   }
 
@@ -213,7 +243,7 @@ function sandoWsRelay(msg, target, button) {
     return;
   }
   const obj = {
-    client_id: target,
+    target_client_id: target,
     data: msg,
   };
   window.wsRelay.send(JSON.stringify(obj));

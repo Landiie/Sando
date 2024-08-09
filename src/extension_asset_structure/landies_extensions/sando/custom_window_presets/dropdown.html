@@ -114,8 +114,8 @@
         headercaption.textContent = Sando.payload.caption;
         fillDropdown()
         console.log(Sando)
-        Sando.getVariable('asdasdasdas', 'Sando').then((res) => {
-            caption.textContent = res
+        Sando.getVariable('node', 'Sando').then((res) => {
+            headercaption.textContent = res
             console.log(res)
         })
         submit.addEventListener('click', () => {
