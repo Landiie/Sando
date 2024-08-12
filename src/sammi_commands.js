@@ -139,3 +139,14 @@ SAMMI.extCommand('Sando: CW Dropdown', 4467268, 80,{
   arr: ['Array Name', 14, '', null, null],
   var: ['Save Status Variable', 14, '', null, null]
 }, false, true)
+
+const sandoSdPresets = ['Sando: SD Choice', 'Sando: SD Open File', 'Sando: SD Save File', 'Sando: SD Custom']
+
+SAMMI.extCommand('Sando: System Dialog', 4467268, 80,{ 
+  mode: ['Mode', 25, 'Choose Option...', null, sandoSdPresets]
+}, true)
+SAMMI.extCommand('Sando: SD Custom', 4467268, 80,{ 
+  mode: ['Mode', 25, 'Sando: SD Custom', null, sandoSdPresets],
+  config: ['Dialog Config (JSON)', 0, '', null, null],
+  var: ['Save Status Variable', 14, '', null, null]
+}, false, true)

@@ -39,7 +39,7 @@ function connectToRelay() {
     //separates out unique events
     switch (eventData.event) {
       case "SandoDevServerOperationalAndConnected":
-        SAMMI.setVariable('bridge_relay_connected', true, 'Sando');
+        SAMMI.setVariable("bridge_relay_connected", true, "Sando");
         break;
       case "SandoDevTriggerExtCustomWindow":
         console.log("Custom event: TriggerExt CustomWindow");
@@ -77,7 +77,24 @@ function connectToRelay() {
           );
         }
         break;
-
+      case "SandoDevDialog":
+        console.log(eventData);
+        console.log("Custom event: Dialog Result");
+        if (eventData.instance) {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.result,
+            eventData.button,
+            eventData.instance
+          );
+        } else {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.result,
+            eventData.button
+          );
+        }
+        break;
       default:
         //typical use case
         SAMMI.alert(
@@ -194,7 +211,7 @@ function sandoCustomWindow(
       sammiVar: saveVar,
       sammiInstance: instanceId,
       windowConfig: {},
-      payload: {}
+      payload: {},
     },
   };
 
@@ -230,6 +247,41 @@ function sandoCustomWindow(
   console.log("sending a custom window, heres the data: ", obj);
   window.wsRelay.send(JSON.stringify(obj));
 }
+
+function sandoSystemDialog(config, saveVar, btn, instanceId) {
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "NewDialog",
+      sammiBtn: btn,
+      sammiVar: saveVar,
+      sammiInstance: instanceId,
+      dialogConfig: {},
+    },
+  };
+
+  if (config !== "") {
+    try {
+      const parsedConfig = JSON.parse(config);
+      obj.data.dialogConfig = parsedConfig;
+    } catch (e) {
+      devSandoError(
+        btn,
+        "Sando: System Dialog",
+        `JSON Dialog Config is malformed.`
+      );
+      SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+      return;
+    }
+  }
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a custom dialog, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
+}
+
 function sandoWsRelay(msg, target, button) {
   if (target === "") {
     SAMMI.alert("[Sando] You need to provide a Target Client ID!");

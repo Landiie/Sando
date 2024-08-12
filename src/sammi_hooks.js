@@ -31,3 +31,6 @@ case "Sando: CW Custom": {
 case "Sando: CW Dropdown": {
     sandoCustomWindowDropdown(SAMMIJSON.header, SAMMIJSON.caption, SAMMIJSON.arr, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
+case "Sando: SD Custom": {
+    sandoSystemDialog(SAMMIJSON.config, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break
