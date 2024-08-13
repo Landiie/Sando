@@ -331,6 +331,7 @@ function sandoWsRelay(msg, target, button) {
     target_client_id: target,
     data: msg,
   };
+  console.log('relaying to clients, data:', obj)
   window.wsRelay.send(JSON.stringify(obj));
 }
 // function sandoSemverCompare(mode, saveVar, source, compare, target, fromButton) {
