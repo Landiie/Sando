@@ -248,6 +248,39 @@ function sandoCustomWindow(
   window.wsRelay.send(JSON.stringify(obj));
 }
 
+async function sandoSystemDialogPopup() {}
+
+async function sandoSystemDialogChoice(
+  type,
+  title,
+  message,
+  details,
+  defaultYes,
+  saveVar,
+  button,
+  instanceId
+) {
+  if (!saveVar) {
+    devSandoError(
+      saveVar,
+      "Sando: SD Choice",
+      'No "Save Variable" provided, you cant get the response from the user without this!'
+    );
+    return;
+  }
+
+  SAMMI.triggerExt("Sando: SD Choice", {
+    type: type.toLowerCase(),
+    title: title,
+    message: message,
+    detail: details,
+    defaultYes: defaultYes,
+    var: saveVar,
+    FromButton: button,
+    instanceId: instanceId,
+  });
+}
+
 function sandoSystemDialog(config, saveVar, btn, instanceId) {
   const obj = {
     target_client_id: "Sando Helper",

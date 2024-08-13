@@ -34,3 +34,6 @@ case "Sando: CW Dropdown": {
 case "Sando: SD Custom": {
     sandoSystemDialog(SAMMIJSON.config, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
+case "Sando: SD Choice": {
+    sandoSystemDialogChoice(SAMMIJSON.type, SAMMIJSON.title, SAMMIJSON.message, SAMMIJSON.detail, SAMMIJSON.defaultYes, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break

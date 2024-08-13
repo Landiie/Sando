@@ -150,3 +150,12 @@ SAMMI.extCommand('Sando: SD Custom', 4467268, 80,{
   config: ['Dialog Config (JSON)', 0, '', null, null],
   var: ['Save Status Variable', 14, '', null, null]
 }, false, true)
+SAMMI.extCommand('Sando: SD Choice', 4467268, 80,{ 
+  mode: ['Mode', 25, 'Sando: SD Choice', null, sandoSdPresets],
+  type: ['Type', 19, 'None', null, ['None', 'Info', 'Warning', 'Error']],
+  title: ['Title', 14, '', null, null],
+  message: ['Message', 14, '', null, null],
+  detail: ['Details', 14, '', null, null],
+  defaultYes: ['Default: Yes', 2, true, null, null],
+  var: ['Save Result Variable', 14, '', null, null]
+}, false, true)
