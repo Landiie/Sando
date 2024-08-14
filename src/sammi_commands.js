@@ -352,7 +352,30 @@ SAMMI.extCommand(
     label: ["Confirm Label", 14, "", null, null],
     filters: [
       "Filters (JSON)",
-      14,
+      0,
+      '[\n    {\n        "name": "Images",\n        "extensions": ["png", "jpg", "gif"]\n    }\n]',
+      null,
+      null,
+    ],
+    properties: ["Properties Array", 14, "", null, null],
+    var: ["Save Result Variable", 14, "", null, null],
+  },
+  false,
+  true
+);
+
+SAMMI.extCommand(
+  "Sando: SD Save",
+  4467268,
+  80,
+  {
+    mode: ["Mode", 25, "Sando: SD Save", null, sandoSdPresets],
+    title: ["Title", 14, "", null, null],
+    path: ["Default Path", 14, "", null, null],
+    label: ["Confirm Label", 14, "", null, null],
+    filters: [
+      "Filters (JSON)",
+      0,
       '[\n    {\n        "name": "Images",\n        "extensions": ["png", "jpg", "gif"]\n    }\n]',
       null,
       null,

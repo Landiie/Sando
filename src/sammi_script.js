@@ -95,6 +95,42 @@ function connectToRelay() {
           );
         }
         break;
+      case "SandoDevFileOpen":
+        console.log(eventData);
+        console.log("Custom event: Dialog open");
+        if (eventData.instance) {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.result,
+            eventData.button,
+            eventData.instance
+          );
+        } else {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.result,
+            eventData.button
+          );
+        }
+        break;
+      case "SandoDevFileSave":
+        console.log(eventData);
+        console.log("Custom event: Dialog save");
+        if (eventData.instance) {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.result,
+            eventData.button,
+            eventData.instance
+          );
+        } else {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.result,
+            eventData.button
+          );
+        }
+        break;
       default:
         //typical use case
         SAMMI.alert(
@@ -250,6 +286,84 @@ function sandoCustomWindow(
 
 async function sandoSystemDialogPopup() {}
 
+async function sandoSystemDialogSave(
+  title,
+  path,
+  label,
+  filters,
+  properties,
+  saveVar,
+  btn,
+  instanceId
+) {
+  if (!saveVar) {
+    devSandoError(
+      saveVar,
+      "Sando: SD Save",
+      'No "Save Variable" provided, you cant get the response from the user without this!'
+    );
+  }
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "NewFileSave",
+      title: title,
+      path: path,
+      label: label,
+      filters: filters,
+      properties: properties,
+      sammiBtn: btn,
+      sammiVar: saveVar,
+      sammiInstance: instanceId,
+    },
+  };
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a file save dialog, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
+}
+
+async function sandoSystemDialogOpen(
+  title,
+  path,
+  label,
+  filters,
+  properties,
+  saveVar,
+  btn,
+  instanceId
+) {
+  if (!saveVar) {
+    devSandoError(
+      saveVar,
+      "Sando: SD Open",
+      'No "Save Variable" provided, you cant get the response from the user without this!'
+    );
+  }
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "NewFileOpen",
+      title: title,
+      path: path,
+      label: label,
+      filters: filters,
+      properties: properties,
+      sammiBtn: btn,
+      sammiVar: saveVar,
+      sammiInstance: instanceId,
+    },
+  };
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a file open dialog, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
+}
+
 async function sandoSystemDialogChoice(
   type,
   title,
@@ -331,7 +445,7 @@ function sandoWsRelay(msg, target, button) {
     target_client_id: target,
     data: msg,
   };
-  console.log('relaying to clients, data:', obj)
+  console.log("relaying to clients, data:", obj);
   window.wsRelay.send(JSON.stringify(obj));
 }
 // function sandoSemverCompare(mode, saveVar, source, compare, target, fromButton) {

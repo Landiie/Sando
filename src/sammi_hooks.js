@@ -37,3 +37,9 @@ case "Sando: SD Custom": {
 case "Sando: SD Choice": {
     sandoSystemDialogChoice(SAMMIJSON.type, SAMMIJSON.title, SAMMIJSON.message, SAMMIJSON.detail, SAMMIJSON.defaultYes, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
+case "Sando: SD Open": {
+    sandoSystemDialogOpen(SAMMIJSON.title, SAMMIJSON.path, SAMMIJSON.label, SAMMIJSON.filters, SAMMIJSON.properties, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break
+case "Sando: SD Save": {
+    sandoSystemDialogSave(SAMMIJSON.title, SAMMIJSON.path, SAMMIJSON.label, SAMMIJSON.filters, SAMMIJSON.properties, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break
