@@ -256,7 +256,11 @@ SAMMI.extCommand(
 //     comp: ['Compare', 8, '>=', null, null],
 //     target: ['Target', 14, '', null, null]
 // });
-const sandoCwPresets = ["Sando: CW Dropdown", "Sando: CW Custom"];
+const sandoCwPresets = [
+  "Sando: CW Dropdown",
+  "Sando: CW Custom",
+  "Sando: CW Custom (Event)",
+];
 
 SAMMI.extCommand(
   "Sando: Custom Window",
@@ -276,7 +280,22 @@ SAMMI.extCommand(
     html: ["HTML File", 22, "", null, null],
     config: ["Window Config (JSON)", 0, "", null, null],
     payload: ["Custom Payload (JSON)", 0, "", null, null],
+    id: ["ID", 14, "", null, null],
     var: ["Save Status Variable", 14, "", null, null],
+  },
+  false,
+  true
+);
+SAMMI.extCommand(
+  "Sando: CW Custom (Event)",
+  4467268,
+  80,
+  {
+    mode: ["Mode", 25, "Sando: CW Custom (Event)", null, sandoCwPresets],
+    id: ["Window ID", 14, "", null, null],
+    eventToEmit: ["Event Name", 14, "", null, null],
+    payload: ["Custom Payload (JSON)", 0, "", null, null],
+    // var: ["Save Status Variable", 14, "", null, null],
   },
   false,
   true

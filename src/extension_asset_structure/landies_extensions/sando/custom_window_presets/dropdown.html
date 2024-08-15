@@ -118,6 +118,15 @@
             headercaption.textContent = res
             console.log(res)
         })
+
+        //example of event. if sammi sends the event name holymoly with matching id, boom
+        Sando.on('holymoly', (e) => {
+            console.log('i just went holy moly. ', e)
+        })
+        // Sando.on('holymoly', (e) => {
+        //     console.log('and did it again!', e)
+        // })
+
         submit.addEventListener('click', () => {
             Sando.setVariable('selectedOption', dropdown.value)
             Sando.setStatus(true)

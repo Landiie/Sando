@@ -228,6 +228,7 @@ function sandoCustomWindow(
   htmlPath,
   config,
   payload,
+  id,
   saveVar,
   btn,
   instanceId
@@ -248,6 +249,7 @@ function sandoCustomWindow(
       sammiInstance: instanceId,
       windowConfig: {},
       payload: {},
+      id: id,
     },
   };
 
@@ -281,6 +283,62 @@ function sandoCustomWindow(
   obj.data = JSON.stringify(obj.data);
 
   console.log("sending a custom window, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
+}
+
+function sandoCustomWindowEvent(id, eventToEmit, payload, btn, instanceId) {
+  if (!id) {
+    devSandoError(
+      btn,
+      "Sando: CW Custom (Event)",
+      'No "ID" provided, no window to identify'
+    );
+    //SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
+  }
+
+  if (!eventToEmit) {
+    devSandoError(
+      btn,
+      "Sando: CW Custom (Event)",
+      'No "Event Name" provided, no event to emit to window'
+    );
+    //SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
+  }
+
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "EmitEventWindow",
+      id: id,
+      eventToEmit: eventToEmit,
+      payload: {},
+      sammiBtn: btn,
+      //sammiVar: saveVar,
+      sammiInstance: instanceId,
+    },
+  };
+
+  if (payload !== "") {
+    try {
+      const parsedPayload = JSON.parse(payload);
+      obj.data.payload = parsedPayload;
+    } catch (e) {
+      devSandoError(
+        btn,
+        "Sando: CW Custom (Event)",
+        `JSON Payload is malformed.`
+      );
+      //SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+      return;
+    }
+  }
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a event to be emitted, heres the data: ", obj);
   window.wsRelay.send(JSON.stringify(obj));
 }
 
@@ -337,10 +395,12 @@ async function sandoSystemDialogOpen(
 ) {
   if (!saveVar) {
     devSandoError(
-      saveVar,
+      btn,
       "Sando: SD Open",
       'No "Save Variable" provided, you cant get the response from the user without this!'
     );
+    SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
   }
   const obj = {
     target_client_id: "Sando Helper",
@@ -376,7 +436,7 @@ async function sandoSystemDialogChoice(
 ) {
   if (!saveVar) {
     devSandoError(
-      saveVar,
+      button,
       "Sando: SD Choice",
       'No "Save Variable" provided, you cant get the response from the user without this!'
     );
