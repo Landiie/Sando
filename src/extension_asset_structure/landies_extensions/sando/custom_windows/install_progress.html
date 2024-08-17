@@ -1,0 +1,133 @@
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/cdn/themes/light.css" />
+
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+    * {
+        padding: 0;
+        margin: 0;
+        font-family: Nunito, 'Courier New', Courier, monospace;
+    }
+
+    body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background-image: url(./bg.png);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        -webkit-app-region: drag;
+        -webkit-user-select: none;
+    }
+
+    .container {
+        position: absolute;
+        background-color: rgba(16, 7, 7, 0.488);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    #version {
+        position: absolute;
+        bottom: 1px;
+        left: 5px;
+    }
+
+    .info {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    sl-progress-bar {
+        width: 100%
+    }
+
+    sl-dialog {
+        color: black
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img width="150" src="https://landie.land/assets/images/sammi-extensions/sando/cover_bridge.png" alt="">
+        </div>
+        <div class="info">
+            <div class="header">
+                <h1>Installing Sando...</h1>
+                <p id="caption">. . .</p>
+            </div>
+
+            <sl-progress-bar value="0" class="progress-bar-values" style="--height: 20px;">50%</sl-progress-bar>
+        </div>
+
+        <p id="version">Version: ???</p>
+        <!-- <sl-button>Open Dialog</sl-button> -->
+    </div>
+    <sl-dialog label="Dialog" class="dialog-deny-close">
+        This dialog will not close when you click on the overlay.
+        <sl-button slot="footer" variant="primary">Close</sl-button>
+    </sl-dialog>
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.16.0/cdn/shoelace-autoloader.js"></script>
+    <script>
+        const wait = (ms) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve()
+                }, ms)
+            })
+        }
+        // const dialog = document.querySelector('sl-dialog');
+        // console.log(dialog)
+        // dialog.show()
+
+        // Prevent the dialog from closing when the user clicks on the overlay
+        // dialog.addEventListener('sl-request-close', event => {
+        //     if (event.detail.source === 'overlay') {
+        //         event.preventDefault();
+        //     }
+        // });
+        version.textContent = "Version: " + Sando.payload.version
+
+        Sando.on("progress", async (e) => {
+            caption.textContent = e.caption
+        })
+        Sando.on("progress-bar", async (e) => {
+            const progressBar = document.querySelector('.progress-bar-values');
+            const newValue = Math.min(Math.max(parseInt(progressBar.value + 17), 0), 100);
+            progressBar.value = newValue
+            progressBar.textContent = `${newValue}%`;
+
+            if (newValue === 100) {
+                await wait(1000);
+                Sando.setStatus(true)
+            }
+        })
+
+
+    </script>
+</body>
