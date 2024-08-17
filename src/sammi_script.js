@@ -1,5 +1,6 @@
-const socketDelay = ms => new Promise(res => setTimeout(res, ms));
-window.addEventListener("load", () => {
+const sandoDelay = ms => new Promise(res => setTimeout(res, ms));
+window.addEventListener("load", async () => {
+  await sandoDelay(200)
   connectToRelay(); //begin loop
 });
 
@@ -10,7 +11,7 @@ function connectToRelay() {
   window.wsRelay.onopen = () => {
     console.log("[Sando] Connected to relay server!");
     SAMMI.alert("[Sando] Connected to relay server!");
-    SAMMI.setVariable("bridge_relay_connected", true, "Sando");
+    //SAMMI.setVariable("bridge_relay_connected", true, "Sando");
   };
 
   window.wsRelay.onclose = async () => {
@@ -24,7 +25,7 @@ function connectToRelay() {
     SAMMI.alert(
       `[Sando] Retrying conection to relay server in ${interval / 1000}`
     );
-    await socketDelay(interval);
+    await sandoDelay(interval);
     connectToRelay();
   };
 
@@ -38,7 +39,7 @@ function connectToRelay() {
     const eventData = JSON.parse(event.data);
     //separates out unique events
     switch (eventData.event) {
-      case "SandoDevServerOperationalAndConnected":
+      case "SandoDevHelperConnected":
         SAMMI.setVariable("bridge_relay_connected", true, "Sando");
         break;
       case "SandoDevTriggerExtCustomWindow":
@@ -62,6 +63,24 @@ function connectToRelay() {
       case "SandoDevSetVariableCustomWindow":
         console.log(eventData);
         console.log("Custom event: SetVariable CustomWindow");
+        if (eventData.instance) {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.value,
+            eventData.button,
+            eventData.instance
+          );
+        } else {
+          SAMMI.setVariable(
+            eventData.variable,
+            eventData.value,
+            eventData.button
+          );
+        }
+        break;
+      case "SandoDevWindowShowing":
+        console.log(eventData);
+        console.log("Custom event: Window Visible CustomWindow");
         if (eventData.instance) {
           SAMMI.setVariable(
             eventData.variable,
@@ -229,6 +248,7 @@ function sandoCustomWindow(
   config,
   payload,
   id,
+  saveVarVis,
   saveVar,
   btn,
   instanceId
@@ -245,6 +265,7 @@ function sandoCustomWindow(
       event: "NewWindow",
       htmlPath: htmlPath,
       sammiBtn: btn,
+      sammiVarVis: saveVarVis,
       sammiVar: saveVar,
       sammiInstance: instanceId,
       windowConfig: {},

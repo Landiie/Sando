@@ -281,6 +281,7 @@ SAMMI.extCommand(
     config: ["Window Config (JSON)", 0, "", null, null],
     payload: ["Custom Payload (JSON)", 0, "", null, null],
     id: ["ID", 14, "", null, null],
+    varVis: ["Save Visible Variable", 14, "", null, null],
     var: ["Save Status Variable", 14, "", null, null],
   },
   false,

@@ -118,7 +118,7 @@
         })
         Sando.on("progress-bar", async (e) => {
             const progressBar = document.querySelector('.progress-bar-values');
-            const newValue = Math.min(Math.max(parseInt(progressBar.value + 17), 0), 100);
+            const newValue = Math.min(Math.max(parseInt(progressBar.value + 20), 0), 100);
             progressBar.value = newValue
             progressBar.textContent = `${newValue}%`;
 

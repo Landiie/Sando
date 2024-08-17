@@ -26,7 +26,7 @@ case "Sando: Websocket Relay Message": {
 //     sandoSemver(SAMMIJSON.FromButton);
 // } break
 case "Sando: CW Custom": {
-    sandoCustomWindow(SAMMIJSON.html, SAMMIJSON.config, SAMMIJSON.payload, SAMMIJSON.id, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+    sandoCustomWindow(SAMMIJSON.html, SAMMIJSON.config, SAMMIJSON.payload, SAMMIJSON.id, SAMMIJSON.varVis, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
 case "Sando: CW Custom (Event)": {
     sandoCustomWindowEvent(SAMMIJSON.id, SAMMIJSON.eventToEmit, SAMMIJSON.payload, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
