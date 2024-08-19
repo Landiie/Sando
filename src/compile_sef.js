@@ -2,13 +2,11 @@ const path = require("path");
 const fs = require("fs").promises;
 const process = require("process");
 
-const OUT_FILE = path.join(__dirname, 'compiled.sef')
+const OUT_FILE = path.join(__dirname, "compiled.sef");
+const MANIFEST_PATH = path.join(__dirname, "ext_manifest.json");
 
 const fetchManifest = async () => {
-  const res = await fs.readFile(
-    path.join(__dirname, "ext_manifest.json"),
-    "utf-8"
-  );
+  const res = await fs.readFile(MANIFEST_PATH, "utf-8");
   return JSON.parse(res);
 };
 const fetchExternal = async () => {
@@ -35,6 +33,7 @@ const compileOver = async config => {
     );
     const deck = JSON.parse(deckRaw);
     const compiledDeck = { ...deck, ...config };
+
     return JSON.stringify(compiledDeck);
   } catch (e) {
     return "";
@@ -75,11 +74,14 @@ ${script}
 [insert_over]
 ${overData}`;
 
+  //clean up manifest
+  manifest.deck_config.extension_assets = "";
+  await fs.writeFile(MANIFEST_PATH, JSON.stringify(manifest), "utf-8");
+
   // Ensure all line endings are CRLF (\r\n)
   SammiExtension = SammiExtension.replace(/((?<!\r)\n|\r(?!\n))/g, "\r\n");
-  
-  await fs.writeFile(OUT_FILE, SammiExtension, { encoding: "utf8" });
 
+  await fs.writeFile(OUT_FILE, SammiExtension, { encoding: "utf8" });
 };
 
 main();

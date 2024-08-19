@@ -223,7 +223,7 @@ SAMMI.extCommand(
 SAMMI.extCommand(
   "Sando: Extract .sef Assets (No Node)",
   4467268,
-  80,
+  52,
   {
     extName: ["Extension Name", 14, "", null, null],
     var: ["Status Variable", 14, "", null, null],
@@ -239,7 +239,7 @@ SAMMI.extCommand(
 SAMMI.extCommand(
   "Sando: Twitch Get User Info (Cached)",
   4467268,
-  80,
+  52,
   {
     user_id: ["User ID", 15, "", null, null],
     var: ["Save Variable", 14, "", null, null],
@@ -256,10 +256,22 @@ SAMMI.extCommand(
 //     comp: ['Compare', 8, '>=', null, null],
 //     target: ['Target', 14, '', null, null]
 // });
+
+//TODO unfinished anti tamper
+// SAMMI.extCommand(
+//   "Sando: Deck Register Anti-Tamper",
+//   4467268,
+//   52,
+//   {
+//     deck_id: ["Deck ID", 33, 0, null, null],
+//   },
+//   true
+// );
 const sandoCwPresets = [
   "Sando: CW Dropdown",
   "Sando: CW Custom",
   "Sando: CW Custom (Event)",
+  "Sando: CW Custom (Status)",
 ];
 
 SAMMI.extCommand(
@@ -302,6 +314,18 @@ SAMMI.extCommand(
   true
 );
 SAMMI.extCommand(
+  "Sando: CW Custom (Status)",
+  4467268,
+  80,
+  {
+    mode: ["Mode", 25, "Sando: CW Custom (Status)", null, sandoCwPresets],
+    id: ["Window ID", 14, "", null, null],
+    status: ["Status", 2, false, null, null],
+  },
+  false,
+  true
+);
+SAMMI.extCommand(
   "Sando: CW Dropdown",
   4467268,
   80,
@@ -326,7 +350,7 @@ const sandoSdPresets = [
 SAMMI.extCommand(
   "Sando: System Dialog",
   4467268,
-  80,
+  52,
   {
     mode: ["Mode", 25, "Choose Option...", null, sandoSdPresets],
   },

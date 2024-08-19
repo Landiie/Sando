@@ -11,7 +11,7 @@ case "Sando: Log": {
     sandoLog(SAMMIJSON.section, SAMMIJSON.severity, SAMMIJSON.text, SAMMIJSON.log_path, SAMMIJSON.FromButton);
 } break
 case "Sando: Array Search (Simple)": {
-    sandoArraySearchSimple(SAMMIJSON.mode, SAMMIJSON.arr, SAMMIJSON.search, SAMMIJSON.var, SAMMIJSON.FromButton);
+    sandoArraySearchSimple(SAMMIJSON.mode, SAMMIJSON.arr, SAMMIJSON.search, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
 case "Sando: Array Search": {
     sandoArraySearch(SAMMIJSON.FromButton);
@@ -30,6 +30,9 @@ case "Sando: CW Custom": {
 } break
 case "Sando: CW Custom (Event)": {
     sandoCustomWindowEvent(SAMMIJSON.id, SAMMIJSON.eventToEmit, SAMMIJSON.payload, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break
+case "Sando: CW Custom (Status)": {
+    sandoCustomWindowStatus(SAMMIJSON.id, SAMMIJSON.status, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
 case "Sando: CW Dropdown": {
     sandoCustomWindowDropdown(SAMMIJSON.header, SAMMIJSON.caption, SAMMIJSON.arr, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);

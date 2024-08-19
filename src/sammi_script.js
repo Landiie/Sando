@@ -1,168 +1,248 @@
 const sandoDelay = ms => new Promise(res => setTimeout(res, ms));
+const sandoData = {
+  port: 6626,
+};
+
 window.addEventListener("load", async () => {
-  await sandoDelay(200)
-  connectToRelay(); //begin loop
+  const iniPath = "landies_extensions/sando/settings.ini";
+  const settingsForm = document.querySelector("#sando-nav-settings-pane form");
+
+  await sandoDelay(200); // give time to bridge to allow communication to sammi
+  await initialize();
+  connectToRelay(sandoData.port); //begin loop
+
+
+  async function initialize() {
+    const [iniPort] = await Promise.all([
+      SAMMI.loadIni(iniPath, "main", "helper_port", "string"),
+    ]);
+
+    //set to data
+    console.log('port recieved', iniPort.Value)
+    if (iniPort.Value) sandoData.port = iniPort.Value;
+
+    //set visuals
+    settingsForm.querySelector('input[name="port"]').value = sandoData.port;
+  }
+
+  //listeners
+  settingsForm.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const formData = getFormContents(settingsForm);
+
+    await Promise.all([
+      SAMMI.saveIni(iniPath, "main", "helper_port", formData.port, "string"),
+    ]);
+
+    console.log("saved changes sando");
+  });
+
+  function debounce(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  }
+
+  /**
+   * Grabs all data from inputs and selects and returns an object based on the name attribute.
+   *
+   * @param {Node} form  Form element
+   * @returns object of form data
+   */
+  function getFormContents(form) {
+    const formElements = form.querySelectorAll("input,select");
+    const obj = {};
+
+    for (let i = 0; i < formElements.length; i++) {
+      const element = formElements[i];
+      if (!element.name) continue;
+      const elementType = element.tagName;
+      switch (elementType.toLowerCase()) {
+        case "input": {
+          const inputType = element.attributes.getNamedItem("type").value;
+          switch (inputType) {
+            case "checkbox":
+              obj[element.name] = element.checked;
+              break;
+            case "number":
+              obj[element.name] = element.valueAsNumber;
+              break;
+            default:
+              obj[element.name] = element.value;
+              break;
+          }
+          break;
+        }
+        case "select": {
+          obj[element.name] = element.value;
+          break;
+        }
+        default:
+          break;
+      }
+    }
+    return obj;
+  }
+  function connectToRelay(port) {
+    const wsUrl = `ws://127.0.0.1:${port}/sammi-bridge`;
+    window.wsRelay = new WebSocket(wsUrl); //use window to work around firefox ocnnection issue
+  
+    window.wsRelay.onopen = () => {
+      console.log("[Sando] Connected to server!");
+      SAMMI.alert("[Sando] Connected to server!");
+      //SAMMI.setVariable("bridge_relay_connected", true, "Sando");
+    };
+  
+    window.wsRelay.onclose = async () => {
+      const interval = 3000;
+      SAMMI.setVariable("bridge_relay_connected", false, "Sando");
+      console.log(`[Sando] Retrying conection to server in ${interval / 1000}`);
+      SAMMI.alert("[Sando] Connecting to server...");
+      await sandoDelay(interval);
+      connectToRelay(port);
+    };
+  
+    window.wsRelay.onerror = error => {
+      console.log("[Sando] Relay Server ERROR:");
+      console.error(error);
+    };
+  
+    window.wsRelay.onmessage = async event => {
+      //console.log("relay data recieved: ", event);
+      const eventData = JSON.parse(event.data);
+      //separates out unique events
+      switch (eventData.event) {
+        case "SandoDevHelperConnected":
+          SAMMI.setVariable("bridge_relay_connected", true, "Sando");
+          break;
+        case "SandoDevTriggerExtCustomWindow":
+          //console.log("Custom event: TriggerExt CustomWindow");
+          SAMMI.triggerExt(eventData.extTrigger, eventData.params);
+          break;
+        case "SandoDevTriggerButtonCustomWindow":
+          //console.log("Custom event: TriggerButton CustomWindow");
+          SAMMI.triggerButton(eventData.button);
+          break;
+        case "SandoDevGetVariableCustomWindow":
+          //console.log("Custom event: GetVariable CustomWindow");
+          //console.log(eventData);
+          sandoWindowGetVariable(
+            eventData.variable,
+            eventData.button,
+            eventData.hash,
+            eventData.windowHash
+          );
+          break;
+        case "SandoDevSetVariableCustomWindow":
+          //console.log(eventData);
+          //console.log("Custom event: SetVariable CustomWindow");
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.value,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.value,
+              eventData.button
+            );
+          }
+          break;
+        case "SandoDevWindowShowing":
+          //console.log(eventData);
+          //console.log("Custom event: Window Visible CustomWindow");
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.value,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.value,
+              eventData.button
+            );
+          }
+          break;
+        case "SandoDevDialog":
+          //console.log(eventData);
+          //console.log("Custom event: Dialog Result");
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.result,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.result,
+              eventData.button
+            );
+          }
+          break;
+        case "SandoDevFileOpen":
+          //console.log(eventData);
+          //console.log("Custom event: Dialog open");
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.result,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.result,
+              eventData.button
+            );
+          }
+          break;
+        case "SandoDevFileSave":
+          //console.log(eventData);
+          //console.log("Custom event: Dialog save");
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.result,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.result,
+              eventData.button
+            );
+          }
+          break;
+        default:
+          //typical use case
+          SAMMI.alert(
+            `[Sando] Bridge recieved message from relay server id "${eventData.source}": ${eventData.data}`
+          );
+          SAMMI.triggerExt(`SandoRelay: ${eventData.source}`, {
+            message: eventData.data,
+          });
+          //console.log(event);
+          break;
+      }
+    };
+  }
 });
 
-function connectToRelay() {
-  const wsUrl = "ws://127.0.0.1:6626/sammi-bridge";
-  window.wsRelay = new WebSocket(wsUrl); //use window to work around firefox ocnnection issue
-
-  window.wsRelay.onopen = () => {
-    console.log("[Sando] Connected to relay server!");
-    SAMMI.alert("[Sando] Connected to relay server!");
-    //SAMMI.setVariable("bridge_relay_connected", true, "Sando");
-  };
-
-  window.wsRelay.onclose = async () => {
-    const interval = 500;
-    SAMMI.setVariable("bridge_relay_connected", false, "Sando");
-    console.log("[Sando] Disconnected from relay server...");
-    console.log(
-      `[Sando] Retrying conection to relay server in ${interval / 1000}`
-    );
-    SAMMI.alert("[Sando] Disconnected from relay server...");
-    SAMMI.alert(
-      `[Sando] Retrying conection to relay server in ${interval / 1000}`
-    );
-    await sandoDelay(interval);
-    connectToRelay();
-  };
-
-  window.wsRelay.onerror = error => {
-    console.log("[Sando] Relay Server ERROR:");
-    console.error(error);
-  };
-
-  window.wsRelay.onmessage = async event => {
-    console.log("relay data recieved: ", event);
-    const eventData = JSON.parse(event.data);
-    //separates out unique events
-    switch (eventData.event) {
-      case "SandoDevHelperConnected":
-        SAMMI.setVariable("bridge_relay_connected", true, "Sando");
-        break;
-      case "SandoDevTriggerExtCustomWindow":
-        console.log("Custom event: TriggerExt CustomWindow");
-        SAMMI.triggerExt(eventData.extTrigger, eventData.params);
-        break;
-      case "SandoDevTriggerButtonCustomWindow":
-        console.log("Custom event: TriggerButton CustomWindow");
-        SAMMI.triggerButton(eventData.button);
-        break;
-      case "SandoDevGetVariableCustomWindow":
-        console.log("Custom event: GetVariable CustomWindow");
-        console.log(eventData);
-        sandoWindowGetVariable(
-          eventData.variable,
-          eventData.button,
-          eventData.hash,
-          eventData.windowHash
-        );
-        break;
-      case "SandoDevSetVariableCustomWindow":
-        console.log(eventData);
-        console.log("Custom event: SetVariable CustomWindow");
-        if (eventData.instance) {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.value,
-            eventData.button,
-            eventData.instance
-          );
-        } else {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.value,
-            eventData.button
-          );
-        }
-        break;
-      case "SandoDevWindowShowing":
-        console.log(eventData);
-        console.log("Custom event: Window Visible CustomWindow");
-        if (eventData.instance) {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.value,
-            eventData.button,
-            eventData.instance
-          );
-        } else {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.value,
-            eventData.button
-          );
-        }
-        break;
-      case "SandoDevDialog":
-        console.log(eventData);
-        console.log("Custom event: Dialog Result");
-        if (eventData.instance) {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.result,
-            eventData.button,
-            eventData.instance
-          );
-        } else {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.result,
-            eventData.button
-          );
-        }
-        break;
-      case "SandoDevFileOpen":
-        console.log(eventData);
-        console.log("Custom event: Dialog open");
-        if (eventData.instance) {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.result,
-            eventData.button,
-            eventData.instance
-          );
-        } else {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.result,
-            eventData.button
-          );
-        }
-        break;
-      case "SandoDevFileSave":
-        console.log(eventData);
-        console.log("Custom event: Dialog save");
-        if (eventData.instance) {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.result,
-            eventData.button,
-            eventData.instance
-          );
-        } else {
-          SAMMI.setVariable(
-            eventData.variable,
-            eventData.result,
-            eventData.button
-          );
-        }
-        break;
-      default:
-        //typical use case
-        SAMMI.alert(
-          `[Sando] Bridge recieved message from relay server id "${eventData.source}": ${eventData.data}`
-        );
-        SAMMI.triggerExt(`SandoRelay: ${eventData.source}`, {
-          message: eventData.data,
-        });
-        console.log(event);
-        break;
-    }
-  };
-}
 
 async function sandoWindowGetVariable(name, button, hash, windowHash) {
   console.log(
@@ -362,6 +442,35 @@ function sandoCustomWindowEvent(id, eventToEmit, payload, btn, instanceId) {
   console.log("sending a event to be emitted, heres the data: ", obj);
   window.wsRelay.send(JSON.stringify(obj));
 }
+function sandoCustomWindowStatus(id, status, btn, instanceId) {
+  if (!id) {
+    devSandoError(
+      btn,
+      "Sando: CW Custom (Status)",
+      'No "ID" provided, no window to identify'
+    );
+    //SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
+  }
+
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "SetWindowStatus",
+      id: id,
+      status: status,
+      sammiBtn: btn,
+      //sammiVar: saveVar,
+      sammiInstance: instanceId,
+    },
+  };
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a status to be set on a window, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
+}
 
 async function sandoSystemDialogPopup() {}
 
@@ -556,7 +665,8 @@ function sandoArraySearchSimple(
   arrayName,
   searchString,
   saveVariable,
-  fromButton
+  fromButton,
+  instanceId
 ) {
   SAMMI.getVariable(arrayName, fromButton).then(resp => {
     // console.log(resp)
@@ -588,7 +698,7 @@ function sandoArraySearchSimple(
         "Sando: Array Search (Simple)",
         `values in array "${arrayName}" are not all the same type. Please make sure only one datatype is inside the array! ex: only strings, numbers, etc`
       );
-      SAMMI.setVariable(saveVariable, undefined, fromButton);
+      SAMMI.setVariable(saveVariable, undefined, fromButton, instanceId);
       return;
     }
 
@@ -596,7 +706,7 @@ function sandoArraySearchSimple(
     let fuseResult = fuse.search(searchString);
     if (fuseResult.length === 0) fuseResult = undefined;
 
-    SAMMI.setVariable(saveVariable, fuseResult, fromButton);
+    SAMMI.setVariable(saveVariable, fuseResult, fromButton, instanceId);
   });
 }
 
