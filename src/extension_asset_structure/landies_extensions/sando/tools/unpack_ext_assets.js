@@ -6,8 +6,8 @@ const extsDir = path.join(sammiDir, "bridge", "extensions", "installed");
 
 // const extNameB64 = Buffer.from("LandiTube").toString("base64"); //to be fetched from params, is b64
 const extNameB64 = argv[2];
-// const extName = Buffer.from(extNameB64, "base64").toString("utf-8");
-const extName = Buffer.from('U2FtbWkgQXVkaW8gUGxheWVy', "base64").toString("utf-8");
+const extName = Buffer.from(extNameB64, "base64").toString("utf-8");
+// const extName = Buffer.from('U2FtbWkgQXVkaW8gUGxheWVy', "base64").toString("utf-8");
 
 const extsDirExists = fs.existsSync(extsDir);
 if (!extsDirExists) {
