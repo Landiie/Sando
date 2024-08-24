@@ -1,16 +1,15 @@
-const sandoDelay = ms => new Promise(res => setTimeout(res, ms));
 const sandoData = {
   port: 6626,
 };
 
-window.addEventListener("load", async () => {
+async function sandoMain() {
+  const sandoDelay = ms => new Promise(res => setTimeout(res, ms));
   const iniPath = "landies_extensions/sando/settings.ini";
   const settingsForm = document.querySelector("#sando-nav-settings-pane form");
 
-  await sandoDelay(200); // give time to bridge to allow communication to sammi
+  await sandoDelay(500); // give time to bridge to allow communication to sammi
   await initialize();
   connectToRelay(sandoData.port); //begin loop
-
 
   async function initialize() {
     const [iniPort] = await Promise.all([
@@ -18,7 +17,7 @@ window.addEventListener("load", async () => {
     ]);
 
     //set to data
-    console.log('port recieved', iniPort.Value)
+    console.log("port recieved", iniPort.Value);
     if (iniPort.Value) sandoData.port = iniPort.Value;
 
     //set visuals
@@ -91,13 +90,13 @@ window.addEventListener("load", async () => {
   function connectToRelay(port) {
     const wsUrl = `ws://127.0.0.1:${port}/sammi-bridge`;
     window.wsRelay = new WebSocket(wsUrl); //use window to work around firefox ocnnection issue
-  
+
     window.wsRelay.onopen = () => {
       console.log("[Sando] Connected to server!");
       SAMMI.alert("[Sando] Connected to server!");
       //SAMMI.setVariable("bridge_relay_connected", true, "Sando");
     };
-  
+
     window.wsRelay.onclose = async () => {
       const interval = 3000;
       SAMMI.setVariable("bridge_relay_connected", false, "Sando");
@@ -106,12 +105,12 @@ window.addEventListener("load", async () => {
       await sandoDelay(interval);
       connectToRelay(port);
     };
-  
+
     window.wsRelay.onerror = error => {
       console.log("[Sando] Relay Server ERROR:");
       console.error(error);
     };
-  
+
     window.wsRelay.onmessage = async event => {
       //console.log("relay data recieved: ", event);
       const eventData = JSON.parse(event.data);
@@ -241,8 +240,7 @@ window.addEventListener("load", async () => {
       }
     };
   }
-});
-
+}
 
 async function sandoWindowGetVariable(name, button, hash, windowHash) {
   console.log(

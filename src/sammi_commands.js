@@ -1,3 +1,4 @@
+sandoMain();
 SAMMI.extCommand(
   "Sando: Read Folder",
   4467268,
