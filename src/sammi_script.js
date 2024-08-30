@@ -1,4 +1,5 @@
 const sandoData = {
+  connected_before: false,
   port: 6626,
 };
 
@@ -9,7 +10,7 @@ async function sandoMain() {
 
   await sandoDelay(500); // give time to bridge to allow communication to sammi
   await initialize();
-  connectToRelay(sandoData.port); //begin loop
+  
 
   async function initialize() {
     const [iniPort] = await Promise.all([
@@ -22,6 +23,12 @@ async function sandoMain() {
 
     //set visuals
     settingsForm.querySelector('input[name="port"]').value = sandoData.port;
+
+    if (!sandoData.connected_before) {
+      sandoData.connected_before = true;
+      //put one-time load things here
+      connectToRelay(sandoData.port); //begin loop
+    }
   }
 
   //listeners
@@ -95,6 +102,7 @@ async function sandoMain() {
       console.log("[Sando] Connected to server!");
       SAMMI.alert("[Sando] Connected to server!");
       //SAMMI.setVariable("bridge_relay_connected", true, "Sando");
+      SAMMI.triggerExt("SandoDevServerConnected");
     };
 
     window.wsRelay.onclose = async () => {
@@ -117,7 +125,7 @@ async function sandoMain() {
       //separates out unique events
       switch (eventData.event) {
         case "SandoDevHelperConnected":
-          SAMMI.setVariable("bridge_relay_connected", true, "Sando");
+          //SAMMI.setVariable("bridge_relay_connected", true, "Sando");
           break;
         case "SandoDevTriggerExtCustomWindow":
           //console.log("Custom event: TriggerExt CustomWindow");
