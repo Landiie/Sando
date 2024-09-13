@@ -3,6 +3,6 @@
 - Bug fixes:
   - Fixed an issue where a first-time install of OBS past version 30 would cause a crash when grabbbing extra websocket context. This was caused due to a key not existing in `global.ini` of OBS.
   - Fixed an issue where Sando Helper would take up an absurd amount of CPU in some cases
-  - Fixed an issue where Sando would error during validation if you were installing OBS 30 without installing prior OBS versions and updating from them
+  - Fixed an issue where custom helper ports would not work for sando helper
 - QOL
   - Added the ability to completely wipe old sando_helper files before extracting a new version to cut back on bloat of unused assets
