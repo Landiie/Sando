@@ -10,7 +10,6 @@ async function sandoMain() {
 
   await sandoDelay(500); // give time to bridge to allow communication to sammi
   await initialize();
-  
 
   async function initialize() {
     const [iniPort] = await Promise.all([
@@ -120,10 +119,57 @@ async function sandoMain() {
     };
 
     window.wsRelay.onmessage = async event => {
-      //console.log("relay data recieved: ", event);
       const eventData = JSON.parse(event.data);
       //separates out unique events
       switch (eventData.event) {
+        case "Sando_OBS_Plugin_Install":
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button
+            );
+          }
+          break;
+        case "Sando_OBS_Plugin_Version_Check":
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button
+            );
+          }
+          break;
+        case "Sando_OBS_Plugin_Download":
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button
+            );
+          }
+          break;
         case "SandoDevHelperConnected":
           //SAMMI.setVariable("bridge_relay_connected", true, "Sando");
           break;
@@ -248,6 +294,121 @@ async function sandoMain() {
       }
     };
   }
+}
+
+// async function sandoObspmInstall(plugins, obsPath, saveVar, btn, instanceId) {
+//   if (!obsPath) {
+//     devSandoError("Sando: OBSPM Install", "No obs path specified. Required!");
+//     SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+//     return;
+//   }
+
+//   const obj = {
+//     target_client_id: "Sando Helper",
+//     data: {
+//       event: "OBS_Plugin_Install",
+//       plugins: null,
+//       obsPath: obsPath,
+//       sammiBtn: btn,
+//       sammiVar: saveVar,
+//       sammiInstance: instanceId,
+//     },
+//   };
+
+//   if (!plugins) {
+//     devSandoError("Sando: OBSPM Install", "No plugins specified. Required!");
+//     SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+//     return;
+//   }
+
+//   try {
+//     const parsedPlugins = JSON.parse(plugins);
+//     obj.data.plugins = parsedPlugins;
+//   } catch (e) {
+//     devSandoError(btn, "Sando: OBSPM Install", `JSON Payload is malformed.`);
+//     SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+//     return;
+//   }
+
+//   //relay recieves data as string from bridge
+//   obj.data = JSON.stringify(obj.data);
+
+//   console.log("sending a obspm install, heres the data: ", obj);
+//   window.wsRelay.send(JSON.stringify(obj));
+// }
+async function sandoObspmVersionCheck(plugins, log, saveVar, btn, instanceId) {
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "OBS_Plugin_Version_Check",
+      plugins: null,
+      log: log,
+      sammiBtn: btn,
+      sammiVar: saveVar,
+      sammiInstance: instanceId,
+    },
+  };
+
+  if (!plugins) {
+    devSandoError(
+      "Sando: OBSPM Version Check",
+      "No plugins specified. Required!"
+    );
+    SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
+  }
+
+  try {
+    const parsedPlugins = JSON.parse(plugins);
+    obj.data.plugins = parsedPlugins;
+  } catch (e) {
+    devSandoError(
+      btn,
+      "Sando: OBSPM Version Check",
+      `JSON Payload is malformed.`
+    );
+    SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
+  }
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a obspm version check, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
+}
+async function sandoObspmDownload(plugins, saveVar, btn, instanceId) {
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "OBS_Plugin_Download",
+      plugins: null,
+      sammiBtn: btn,
+      sammiVar: saveVar,
+      sammiInstance: instanceId,
+    },
+  };
+
+  if (!plugins) {
+    devSandoError("Sando: OBSPM Download", "No plugins specified. Required!");
+    SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
+  }
+
+  try {
+    const parsedPlugins = JSON.parse(plugins);
+    obj.data.plugins = parsedPlugins;
+  } catch (e) {
+    devSandoError(btn, "Sando: OBSPM Download", `JSON Payload is malformed.`);
+    SAMMI.setVariable(saveVar, undefined, btn, instanceId);
+    return;
+  }
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a obspm download, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
 }
 
 async function sandoWindowGetVariable(name, button, hash, windowHash) {

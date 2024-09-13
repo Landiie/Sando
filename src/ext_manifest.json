@@ -1,1 +1,14 @@
-{"name":"Sando","info":"A Library to make extension developer's lives easier!","version":"2.8.3","deck_config":{"extension_triggers":["Sando Install"],"extension_assets":"","bridge":true,"obswebsocket":"5.0.0","sammi_version":"2024.2.2"}}
+{
+    "name": "Sando",
+    "info": "A Library to make extension developer's lives easier!",
+    "version": "2.9.0",
+    "deck_config": {
+        "extension_triggers": [
+            "Sando Install"
+        ],
+        "extension_assets": "",
+        "bridge": true,
+        "obswebsocket": "5.0.0",
+        "sammi_version": "2024.2.2"
+    }
+}

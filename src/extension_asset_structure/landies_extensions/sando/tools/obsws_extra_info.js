@@ -97,7 +97,7 @@ function getWebsocketData(globalData, configPath) {
     auth: false,
   };
 
-  if (globalData.OBSWebSocket.ServerPort !== undefined) {
+  if (globalData?.OBSWebSocket?.ServerPort !== undefined) {
     obj.port = parseInt(globalData.OBSWebSocket.ServerPort);
     obj.ps = globalData.OBSWebSocket.ServerPassword;
     obj.enabled = globalData.OBSWebSocket.ServerEnabled;

@@ -49,3 +49,9 @@ case "Sando: SD Open": {
 case "Sando: SD Save": {
     sandoSystemDialogSave(SAMMIJSON.title, SAMMIJSON.path, SAMMIJSON.label, SAMMIJSON.filters, SAMMIJSON.properties, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
+case "Sando: OBSPM Download": {
+    sandoObspmDownload(SAMMIJSON.plugins, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break
+case "Sando: OBSPM Version Check": {
+    sandoObspmVersionCheck(SAMMIJSON.plugins, SAMMIJSON.log, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break

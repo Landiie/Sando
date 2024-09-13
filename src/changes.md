@@ -1,8 +1,8 @@
+- New Features:
+  - Welcome in, `Sando: OBS Plugin Validation`! This has been an ongoing effort for a year to get the perfect automatic plugin version checker, downloader, and installer, and it's finally here! It is a single command that takes in an array of all the plugins you want to "Validate", and simply outputs `true` or `false` depending on what happens throughout the process. Extension developers! No longer should you have trouble ensuring users have the correct plugins, AND at least a specified minimum version (with the option to just download the latest!). The docs will be updated to guide through how to use it, since it can be quite complicated. There are no built in ways to check plugin versions, download obs plugins, or install obs plugins, so I had to create these systems from scratch. Apologies if it gets rough around the edges at some points. To accomodate for these potential pitfalls, there is a fallback "manual" mode that pops up an interactive interface to go to the download pages on the plugins, download the right file and drag it into the window.
 - Bug fixes:
-  - Fixed an issue where a variable wouldn't get set during validation, making it impossible to continue (still experimenting with this)
-  - Fixed an issue where the popup window for installation sometimes showed NaN in the loading bar
-  - Fixed an issue where the popup window for installation sometimes wouldn't disappear when the bar was full
-  - Fixed an issue where the popup window for installation sometimes wouldn't disappear due to a status bug not letting SAMMI listen to that event from the window
-  - Fixed an issue where sando-helper.zip would not get destroyed upon extraction
-  - Fixed an issue where sando helper was not properly waiting for a connection from SAMMI before setting itself as ready (async issue)
-  - Fixed an issue where the websocket client on the bridge would duplicate when manually disconnecting and reconnecting the bridge
+  - Fixed an issue where a first-time install of OBS past version 30 would cause a crash when grabbbing extra websocket context. This was caused due to a key not existing in `global.ini` of OBS.
+  - Fixed an issue where Sando Helper would take up an absurd amount of CPU in some cases
+  - Fixed an issue where Sando would error during validation if you were installing OBS 30 without installing prior OBS versions and updating from them
+- QOL
+  - Added the ability to completely wipe old sando_helper files before extracting a new version to cut back on bloat of unused assets

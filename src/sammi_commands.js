@@ -237,6 +237,7 @@ SAMMI.extCommand(
 //     path: ['obs64.exe Path', 14, '', 1, null],
 //     var: ['Save Results Array Variable', 14, '', 0.7, null]
 //   }, true);
+
 SAMMI.extCommand(
   "Sando: Twitch Get User Info (Cached)",
   4467268,
@@ -247,6 +248,79 @@ SAMMI.extCommand(
   },
   true
 );
+
+const sandoObsManPresets = [
+  "Sando: OBSPM Download",
+  "Sando: OBSPM Version Check",
+];
+
+SAMMI.extCommand(
+  "Sando: OBS Plugin Manager",
+  4467268,
+  80,
+  {
+    mode: ["Mode", 25, "Choose Option...", null, sandoObsManPresets],
+  },
+  true,
+  true //?decided last minute this is dev only
+);
+
+SAMMI.extCommand(
+  "Sando: OBSPM Download",
+  4467268,
+  80,
+  {
+    mode: ["Mode", 25, "Sando: OBSPM Download", 0.5, sandoObsManPresets],
+    plugins: ["Plugins (JSON)", 0, "", 2, null],
+    var: ["Save Variable", 14, "", 0.5, null],
+  },
+  false,
+  true
+);
+//? this install command would be a nightmare to implement since the bridge
+//? gets closed mid install. this was translated to a post request to the helper
+//? instead.
+// SAMMI.extCommand(
+//   "Sando: OBSPM Install",
+//   4467268,
+//   80,
+//   {
+//     mode: ["Mode", 25, "Sando: OBSPM Install", 0.5, sandoObsManPresets],
+//     plugins: ["Plugins (JSON)", 0, "", 1.6, null],
+//     logFile: ["Recent Log Path", 14, "", 1.4, null],
+//     var: ["Save Variable", 14, "", 0.5, null],
+//   },
+//   true,
+//   true
+// );
+SAMMI.extCommand(
+  "Sando: OBSPM Version Check",
+  4467268,
+  80,
+  {
+    mode: ["Mode", 25, "Sando: OBSPM Version Check", 0.5, sandoObsManPresets],
+    plugins: ["Plugins (JSON)", 0, "", 1.6, null],
+    log: ["Latest Log Path", 14, "", 1.4, null],
+    var: ["Save Variable", 14, "", 0.5, null],
+  },
+  false,
+  true
+);
+
+//? this is the ONLY frontfacing command now
+SAMMI.extCommand(
+  "Sando: OBS Plugin Validation",
+  4467268,
+  80,
+  {
+    source: ["Extension Name", 14, "", 0.5, null],
+    plugins: ["Plugins (JSON)", 0, "", 2, null],
+    var: ["Save Variable", 14, "", 0.5, null],
+  },
+  true
+);
+
+
 // SAMMI.extCommand('Sando: Semver', 4467268, 52, {
 //     mode: ['Mode', 25, 'Choose Mode...', null, ['Sando: Semver Compare']]
 // });
@@ -284,6 +358,7 @@ SAMMI.extCommand(
   },
   true
 );
+
 SAMMI.extCommand(
   "Sando: CW Custom",
   4467268,
