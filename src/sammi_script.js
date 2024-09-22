@@ -122,6 +122,38 @@ async function sandoMain() {
       const eventData = JSON.parse(event.data);
       //separates out unique events
       switch (eventData.event) {
+        case "Sando_ScenePacker_Unpack":
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button
+            );
+          }
+          break;
+        case "Sando_ScenePacker_Pack":
+          if (eventData.instance) {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button,
+              eventData.instance
+            );
+          } else {
+            SAMMI.setVariable(
+              eventData.variable,
+              eventData.results,
+              eventData.button
+            );
+          }
+          break;
         case "Sando_OBS_Plugin_Install":
           if (eventData.instance) {
             SAMMI.setVariable(
@@ -336,6 +368,64 @@ async function sandoMain() {
 //   console.log("sending a obspm install, heres the data: ", obj);
 //   window.wsRelay.send(JSON.stringify(obj));
 // }
+function sandoScenePackerPack(
+  scene,
+  denyList,
+  savePath,
+  status,
+  button,
+  instanceId
+) {
+  if (!scene) {
+    devSandoError(button, "Sando: SP Pack", `No scene specified. Required!`);
+    SAMMI.setVariable(status, undefined, button, instanceId);
+    return;
+  }
+
+  if (!denyList) {
+    devSandoError(
+      button,
+      "Sando: SP Pack",
+      `No deny list specified. Required!`
+    );
+  }
+  if (!savePath) {
+    devSandoError(
+      button,
+      "Sando: SP Pack",
+      `No save path specified. Required!`
+    );
+  }
+
+  const obj = {
+    target_client_id: "Sando Helper",
+    data: {
+      event: "ScenePacker_Pack",
+      scene: scene,
+      denyList: null,
+      savePath: savePath,
+      sammiBtn: button,
+      sammiVar: status,
+      sammiInstance: instanceId,
+    },
+  };
+
+  try {
+    const parsedDenyList = JSON.parse(denyList);
+    obj.data.denyList = parsedDenyList;
+  } catch (e) {
+    devSandoError(button, "Sando: SP Pack", `JSON Payload is malformed. ${e}`);
+    SAMMI.setVariable(savePath, undefined, button, instanceId);
+    return;
+  }
+
+  //relay recieves data as string from bridge
+  obj.data = JSON.stringify(obj.data);
+
+  console.log("sending a obspm version check, heres the data: ", obj);
+  window.wsRelay.send(JSON.stringify(obj));
+}
+
 async function sandoObspmVersionCheck(plugins, log, saveVar, btn, instanceId) {
   const obj = {
     target_client_id: "Sando Helper",

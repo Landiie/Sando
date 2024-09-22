@@ -55,3 +55,6 @@ case "Sando: OBSPM Download": {
 case "Sando: OBSPM Version Check": {
     sandoObspmVersionCheck(SAMMIJSON.plugins, SAMMIJSON.log, SAMMIJSON.var, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
 } break
+case "Sando: SP Pack": {
+    sandoScenePackerPack(SAMMIJSON.scene, SAMMIJSON.denyList, SAMMIJSON.savePath, SAMMIJSON.status, SAMMIJSON.FromButton, SAMMIJSON.instanceId);
+} break

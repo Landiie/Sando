@@ -176,13 +176,12 @@ SAMMI.extCommand(
       null,
       ["Sando: SP Unpack", "Sando: SP Pack"],
     ],
-    json: ["Scene Collection File", 22, "", null, null],
     scene: ["Target Scene", 4, "", null, null],
-    denyList: ["Blocked Scenes", 14, "", null, null],
+    denyList: ["Blocked Scenes (JSON)", 14, "", null, null],
     savePath: ["Save Path", 14, "", null, null],
     status: ["Save Status Variable", 14, "", null, null],
   },
-  true,
+  false,
   true
 );
 SAMMI.extCommand("Sando: Array Search", 7873596, 52, {
